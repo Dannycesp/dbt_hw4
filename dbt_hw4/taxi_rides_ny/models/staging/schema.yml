@@ -178,5 +178,4 @@ models:
               quote: false
       - name: payment_type_description
         description: Description of the payment_type code.
-      - name: airport_fee
-        description: Fee for airport-related trips, if applicable.
+        
