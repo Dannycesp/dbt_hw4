@@ -9,7 +9,7 @@ WITH quarterly_revenue AS (
     FROM {{ ref('fact_trips') }}
     GROUP BY service_type, year, quarter
 ),
-revenue_with_yoy AS (
+revenue_with_prev AS (
     SELECT
         service_type,
         year,
@@ -18,16 +18,7 @@ revenue_with_yoy AS (
         LAG(quarterly_revenue) OVER (
             PARTITION BY service_type, quarter
             ORDER BY year
-        ) AS prev_year_revenue,
-        ROUND(
-            100.0 * (quarterly_revenue - LAG(quarterly_revenue) OVER (
-                PARTITION BY service_type, quarter
-                ORDER BY year
-            )) / LAG(quarterly_revenue) OVER (
-                PARTITION BY service_type, quarter
-                ORDER BY year
-            ), 2
-        ) AS yoy_growth_percentage
+        ) AS prev_year_revenue
     FROM quarterly_revenue
     WHERE year IN (2019, 2020)
 )
@@ -37,7 +28,10 @@ SELECT
     year,
     quarter,
     quarterly_revenue,
-    yoy_growth_percentage
-FROM revenue_with_yoy
+    ROUND(
+        100.0 * (quarterly_revenue - prev_year_revenue) / prev_year_revenue,
+        2
+    ) AS yoy_growth_percentage
+FROM revenue_with_prev
 WHERE year = 2020
 ORDER BY service_type, quarter
