@@ -7,6 +7,8 @@ WITH green_trips AS (
         dropoff_datetime,
         pickup_locationid AS pickup_location_id,
         dropoff_locationid AS dropoff_location_id,
+        trip_distance,
+        payment_type,  -- Added
         fare_amount,
         total_amount
     FROM {{ ref('stg_green_tripdata') }}
@@ -18,6 +20,8 @@ yellow_trips AS (
         dropoff_datetime,
         pickup_locationid AS pickup_location_id,
         dropoff_locationid AS dropoff_location_id,
+        trip_distance,
+        payment_type,  -- Added
         fare_amount,
         total_amount
     FROM {{ ref('stg_yellow_tripdata') }}
@@ -38,6 +42,8 @@ SELECT
     t.dropoff_location_id,
     dz.Zone AS dropoff_zone,
     dz.Borough AS dropoff_borough,
+    t.trip_distance,
+    t.payment_type,  -- Added
     t.fare_amount,
     t.total_amount
 FROM all_trips t
